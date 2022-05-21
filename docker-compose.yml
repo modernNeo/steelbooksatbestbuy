@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  steelbooksatbestbuy_bot:
+    env_file: steelbooksatbestbuy_dockerized.env
+    build:
+      context: .
+      dockerfile: steelbooksatbestbuy-bot/Dockerfile
+    volumes:
+      - ./sqlite_db:/src/sqlite_db
+    container_name: steelbooksatbestbuy_bot
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t
+  steelbooksatbestbuy_website:
+    env_file: steelbooksatbestbuy_dockerized.env
+    build:
+      context: .
+      dockerfile:  steelbooksatbestbuy_website/Dockerfile
+    ports:
+      - 8000:8000
+    volumes:
+      - ./sqlite_db:/src/sqlite_db
+    container_name: steelbooksatbestbuy_website
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t
+  steelbooksatbestbuy_poll_bestbuy:
+    env_file: steelbooksatbestbuy_dockerized.env
+    build:
+      context: .
+      dockerfile:  steelbooksatbestbuy_poll_bestbuy/Dockerfile
+    volumes:
+      - ./sqlite_db:/src/sqlite_db
+    container_name: steelbooksatbestbuy_poll_bestbuy
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t

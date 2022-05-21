@@ -1,0 +1,30 @@
+<form method="post">
+    {%  csrf_token %}
+    <h1>Sign-up for alerts for a piece of media</h1><br>
+    {{ error }}<br>
+    Discord Id: <input type="number" required name="discord_id"><br>
+    Email: [optional] <input type="text" name="email"><br>
+    Phone Number: [optional] <input type="number" name="phone_number"><br>
+    <textarea rows="8" cols="30" required name="movies" placeholder="Enter&#10;each&#10;media&#10;name&#10;on&#10;a&#10;new&#10;line"></textarea><br>
+    <button>Submit</button>
+</form>
+{%  if medias|length == 0 %}
+    no media
+{% else %}
+    <a href="?all">All Media</a> | <a href="/">Order-able Media</a> - Price: <a href="?sort=price&order=asc">&#8593;</a> | <a href="?sort=price&order=desc">&#8595;</a> - Quantity: <a href="?sort=quantity&order=asc">&#8593;</a> | <a href="?sort=quantity&order=desc">&#8595;</a>
+    <br><br>
+    <table>
+        {%  for media in medias %}
+            <tr>
+                <td><img src="{{ media.image }}"></td>
+                <td>
+                    Name: <a href="{{ media.product_url }}" target="_blank" >{{ media.name }}</a><br><br>
+                    Price: Regular = {{ media.get_latest_quantity.regular_price }} - Sales {{ media.get_latest_quantity.sales_price }}<br><br>
+                    Quantity: {{ media.get_latest_quantity.quantity }}<br><br>
+                    Status for Pickup: {{ media.get_latest_quantity.status_for_pickup }}<br><br>
+                    Status for Shipping: {{ media.get_latest_quantity.status_for_shipping }}<br><br><br>
+                </td>
+            </tr>
+        {%  endfor %}
+    </table>
+{%  endif %}
