@@ -36,6 +36,15 @@ class Media(models.Model):
 
     )
 
+    @property
+    def order_able(self):
+        if self.get_latest_quantity() is None:
+            return False
+        return (
+                (self.get_latest_quantity().status_for_pickup not in PICKUP_STATUS_NOT_ORDER_ABLE) or
+                (self.get_latest_quantity().status_for_shipping not in SHIPPING_STATUS_NOT_ORDER_ABLE)
+            )
+
     def set_flag_to_be_processed_by_bot(self):
         self.needs_to_be_processed_by_bot = True
 
@@ -270,7 +279,7 @@ class User(models.Model):
                     {
                         "tts": False,
                         "content": (
-                            f"To stop being notified about this item, please use the `.remove_notif` command in the "
+                            f"To stop being notified about this item, please use the `.remove_alert` command in the "
                             f"steel books discord guild"
                         )
                     }),
