@@ -130,7 +130,8 @@ class QuantityUpdate(models.Model):
         new_purchaseable_via_shipping: bool, new_pickup_status: str, new_online_order_status: str
     ):
         return (
-            self.quantity != new_quantity or self.regular_price != new_regular_price or
+            self.quantity < new_quantity  # only want this updated when there is new stock. not when people buy
+            or self.regular_price != new_regular_price or
             self.sales_price != new_sales_price or self.purchaseable_via_pickup != new_purchaseable_via_pickup or
             self.purchaseable_via_shipping != new_purchaseable_via_shipping or
             self.status_for_pickup != new_pickup_status or

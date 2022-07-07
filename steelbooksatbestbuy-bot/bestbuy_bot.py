@@ -306,9 +306,9 @@ class BestBuyBot(commands.Cog):
     async def steelbooks(self, ctx: Context):
         await ctx.send("http://127.0.0.1:8000")
 
-    @commands.command(help="Set channel for alerts to be sent on")
+    @commands.command(help="Save channel for alerts to be sent on")
     @commands.check(check_is_owner)
-    async def set_channel(self, ctx: Context):
+    async def save_channel(self, ctx: Context):
         guild_obj = await self._get_guild_by_id(guild_id=ctx.guild.id)
         if len(ctx.message.channel_mentions) > 0:
             mentioned_channel = ctx.message.channel_mentions[0]
@@ -352,7 +352,7 @@ class BestBuyBot(commands.Cog):
 
     @commands.command(help="Add a role that has to be tagged")
     @commands.check(check_is_owner)
-    async def add_role_to_tag(self, ctx: Context):
+    async def add_role_tag(self, ctx: Context):
         guild_obj = await self._get_guild_by_id(guild_id=ctx.guild.id)
         if guild_obj is None:
             await ctx.send("There is no channel set yet for this guild_obj yet. Please call `.channel`")
@@ -385,7 +385,7 @@ class BestBuyBot(commands.Cog):
 
     @commands.command(help="List roles to tag for alerts")
     @commands.check(check_is_owner)
-    async def list_role_tags(self, ctx: Context):
+    async def role_tags(self, ctx: Context):
         guild_obj = await self._get_guild_by_id(guild_id=ctx.guild.id)
         if guild_obj is None:
             await ctx.send("There is no channel set yet for this guild_obj yet. Please call `.channel`")
@@ -405,7 +405,7 @@ class BestBuyBot(commands.Cog):
 
     @commands.command(help="Stop a role from being tagged")
     @commands.check(check_is_owner)
-    async def remove_role_to_tag(self, ctx: Context):
+    async def remove_role_tag(self, ctx: Context):
         guild_obj = await self._get_guild_by_id(guild_id=ctx.guild.id)
         if guild_obj is None:
             await ctx.send("There is no channel set yet for this guild_obj yet. Please call `.channel`")
@@ -442,10 +442,11 @@ class BestBuyBot(commands.Cog):
         while True:
             now = datetime.datetime.now()
             if now.minute == 0:
-                print(f"time to alert the users on the hour at {now}")
+                print(f"time to alert the users and guilds on the hour at {now}")
                 number_of_medias, medias, date_for_updates_to_ignore = await self._get_latest_medias(
                     limit_search_to_new_media=True
                 )
+                print(f"got {number_of_medias} medias that the guilds and users have to be alerted about")
                 if number_of_medias > 0:
                     await self.send_alert_to_guilds(medias)
                     users = await self.get_all_users()
@@ -458,29 +459,40 @@ class BestBuyBot(commands.Cog):
 
     @sync_to_async
     def send_alert_to_guilds(self, medias: List[Media]):
-        guilds = Guild.objects.all()
-        for guild in guilds:
-            channel_name = guild.guild_name
-            channel_id = guild.channel_id
-            matching_guild = [guild for guild in self.bot.guilds if guild.id == 478433247643303936]
-            roles = guild.roletotargetforguild_set.all()
-            if len(matching_guild) > 0:
-                matching_guild = matching_guild[0]
-                channel_matching_by_id = False
-                channel_matching_by_name = None
-                for channel in matching_guild.text_channels:
-                    if channel.id == channel_id:
-                        channel_matching_by_id = True
-                    if channel.name == channel_name:
-                        channel_matching_by_name = channel
-                    if channel_matching_by_id:
-                        break
-                if channel_matching_by_id:
-                    for media in medias:
-                        guild.send_alert(roles, channel_id, media)
-                elif channel_matching_by_name is not None:
-                    for media in medias:
-                        guild.send_alert(roles, channel_matching_by_name.id, media)
+        guild_objs = Guild.objects.all()
+        print(f"got {len(guild_objs)} guild objects to report about {len(medias)} medias")
+        guild_ids = [guild_obj.guild_id for guild_obj in guild_objs]
+        matching_guilds = [guild for guild in self.bot.guilds if guild.id in guild_ids]
+        print(f"got {len(matching_guilds)} matching guild objects to report about {len(medias)} medias")
+
+        guild_map = {
+            guild_obj.guild_id: guild_obj
+            for guild_obj in guild_objs
+        }
+        for matching_guild in matching_guilds:
+            channel_id = guild_map[matching_guild.id].channel_id
+            channel_name = guild_map[matching_guild.id].channel_name
+            channel_matching_by_id = False
+            channel_matching_by_name = None
+            for channel in matching_guild.text_channels:
+                if channel.id == channel_id:
+                    channel_matching_by_id = True
+                    print(f"got a channel [{channel_id}] to match by ID")
+                    break
+                if channel.name == channel_name:
+                    channel_matching_by_name = channel
+                    print(f"got a channel [{channel_name}] to match by name")
+            print(
+                f"got channel_matching_by_id=[{channel_matching_by_id}] and "
+                f"channel_matching_by_name=[{channel_matching_by_name}]"
+            )
+            roles = guild_map[matching_guild.id].roletotargetforguild_set.all()
+            if channel_matching_by_id:
+                for media in medias:
+                    guild_map[matching_guild.id].send_alert(roles, channel_id, media)
+            elif channel_matching_by_name is not None:
+                for media in medias:
+                    guild_map[matching_guild.id].send_alert(roles, channel_matching_by_name.id, media)
 
     @sync_to_async
     def get_all_users(self) -> list[User]:
