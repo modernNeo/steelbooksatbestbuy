@@ -304,7 +304,7 @@ class BestBuyBot(commands.Cog):
 
     @commands.command(help="Get the url for the website which shows all current steelbooks")
     async def steelbooks(self, ctx: Context):
-        await ctx.send(os.environ['HTTP_HOST'])
+        await ctx.send(f"http://{os.environ['HTTP_HOST']}")
 
     @commands.command(help="Save channel for alerts to be sent on")
     @commands.check(check_is_owner)
