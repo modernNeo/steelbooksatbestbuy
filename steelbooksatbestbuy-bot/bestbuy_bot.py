@@ -304,7 +304,7 @@ class BestBuyBot(commands.Cog):
 
     @commands.command(help="Get the url for the website which shows all current steelbooks")
     async def steelbooks(self, ctx: Context):
-        await ctx.send("http://127.0.0.1:8000")
+        await ctx.send(os.environ['HTTP_HOST'])
 
     @commands.command(help="Save channel for alerts to be sent on")
     @commands.check(check_is_owner)
@@ -318,7 +318,7 @@ class BestBuyBot(commands.Cog):
                     channel_id=mentioned_channel.id
                 )
             await self._set_channel_for_guild(guild_obj)
-            await ctx.send(f"Channel set to {guild_obj.channel_name}")
+            await ctx.send(f"Channel set to <#{guild_obj.channel_id}>")
         else:
             await ctx.send(f"No channel mentioned in command")
 
@@ -346,7 +346,7 @@ class BestBuyBot(commands.Cog):
     async def channel(self, ctx: Context):
         guild_obj = await self._get_guild_by_id(guild_id=ctx.guild.id)
         if guild_obj is not None:
-            await ctx.send(f"Channel set to {guild_obj.channel_name}")
+            await ctx.send(f"Channel set to <#{guild_obj.channel_id}>")
         else:
             await ctx.send("No Channel set to alerts")
 
@@ -361,7 +361,7 @@ class BestBuyBot(commands.Cog):
             mentioned_role = ctx.message.role_mentions[0]
             role_to_target_for_guild = await self._get_role_to_targ_by_name(role_to_tag_name=mentioned_role.name)
             await self._save_role_to_tag(guild_obj, mentioned_role.name, mentioned_role, role_to_target_for_guild)
-            await ctx.send(f"Role \"{mentioned_role.name}\" will be tagged")
+            await ctx.send(f"Role <@&{mentioned_role.id}> will be tagged")
         else:
             await ctx.send(f"No role was mentioned")
 
@@ -394,7 +394,7 @@ class BestBuyBot(commands.Cog):
         if len(roles_to_tag) > 0:
             message = f"Roles that will be tagged:\n"
             for role_to_tag in roles_to_tag:
-                message += f"{role_to_tag.role_to_tag_name}\n"
+                message += f"<@&{role_to_tag.role_to_tag_id}>\n"
             await ctx.send(message)
         else:
             await ctx.send(f"No role are set to be tagged")
@@ -413,7 +413,7 @@ class BestBuyBot(commands.Cog):
         if len(ctx.message.role_mentions) > 0:
             mentioned_role = ctx.message.role_mentions[0]
             await self._delete_role_to_tag_by_name(mentioned_role.name)
-            await ctx.send(f"Role \"{mentioned_role.name}\" will no longer be tagged")
+            await ctx.send(f"Role <@&{mentioned_role.id}> will no longer be tagged")
         else:
             await ctx.send(f"No role was mentioned")
 

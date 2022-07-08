@@ -25,7 +25,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [os.environ['HTTP_HOST'], os.environ['SYNOLOGY_HTTP_HOST']]
+ALLOWED_HOSTS = [os.environ['HTTP_HOST']]
 
 
 # Application definition
