@@ -17,6 +17,8 @@ services:
     build:
       context: .
       dockerfile:  steelbooksatbestbuy_website/Dockerfile
+    ports:
+      - 8000:8000
     volumes:
       - ./sqlite_db:/src/sqlite_db
     container_name: steelbooksatbestbuy_website
