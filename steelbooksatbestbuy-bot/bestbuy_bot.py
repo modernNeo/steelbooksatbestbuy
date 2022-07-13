@@ -313,10 +313,9 @@ class BestBuyBot(commands.Cog):
         if len(ctx.message.channel_mentions) > 0:
             mentioned_channel = ctx.message.channel_mentions[0]
             if guild_obj is None:
-                guild_obj = Guild(
-                    guild_id=ctx.guild.id, guild_name=ctx.guild.name, channel_name=mentioned_channel.name,
-                    channel_id=mentioned_channel.id
-                )
+                guild_obj = Guild(guild_id=ctx.guild.id, guild_name=ctx.guild.name)
+            guild_obj.channel_id = mentioned_channel.id
+            guild_obj.channel_name = mentioned_channel.name
             await self._set_channel_for_guild(guild_obj)
             await ctx.send(f"Channel set to <#{guild_obj.channel_id}>")
         else:
