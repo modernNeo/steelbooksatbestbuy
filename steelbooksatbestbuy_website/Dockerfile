@@ -7,6 +7,8 @@ ENV DISCORD_BOT_TOKEN=$DISCORD_BOT_TOKEN
 ENV HTTP_HOST=$HTTP_HOST
 ENV WEBSITE_DATABASE_PATH=$WEBSITE_DATABASE_PATH
 
+EXPOSE 8000
+
 WORKDIR /src
 
 COPY steelbooksatbestbuy_website/steelbooksatbestbuy steelbooksatbestbuy
