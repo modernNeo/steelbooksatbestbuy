@@ -8,6 +8,7 @@ services:
     volumes:
       - ./sqlite_db:/src/sqlite_db
     container_name: steelbooksatbestbuy_bot
+    image: steelbooksatbestbuy_bot
     networks:
       - steelbooksatbestbuy_network
 #    stdin_open: true # docker run -i
@@ -20,6 +21,7 @@ services:
     volumes:
       - ./sqlite_db:/src/sqlite_db
     container_name: steelbooksatbestbuy_website
+    image: steelbooksatbestbuy_website
     networks:
       - steelbooksatbestbuy_network
 #    stdin_open: true # docker run -i
@@ -32,6 +34,7 @@ services:
     volumes:
       - ./sqlite_db:/src/sqlite_db
     container_name: steelbooksatbestbuy_poll_bestbuy
+    image: steelbooksatbestbuy_poll_bestbuy
     networks:
       - steelbooksatbestbuy_network
 #    stdin_open: true # docker run -i
