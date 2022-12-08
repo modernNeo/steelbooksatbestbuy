@@ -1,10 +1,16 @@
 import datetime
 import json
 import os
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 from time import sleep
-from apscheduler.schedulers.blocking import BlockingScheduler
+from typing import List
+
 import django
 import requests
+from apscheduler.schedulers.blocking import BlockingScheduler
+from twilio.rest import Client
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
@@ -30,6 +36,21 @@ class BestBuyAPI:
             "Upgrade-Insecure-Requests": "1",
             "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101 Firefox/91.0"
         }
+
+    def get_latest_medias(self, limit_search_to_new_media: bool = False) -> tuple[int, List[Media], datetime.datetime]:
+        date_for_updates_to_ignore = datetime.datetime.now()
+        medias = Media.objects.all().filter(
+            needs_to_be_processed_by_bot=True
+        ) if limit_search_to_new_media else Media.objects.all()
+        if limit_search_to_new_media:
+            for media in medias:
+                media.needs_to_be_processed_by_bot = False
+            date_for_updates_to_ignore = datetime.datetime.now()
+            Media.objects.bulk_update(medias, ['needs_to_be_processed_by_bot'])
+        else:
+            order_able_skus = [media.sku for media in medias if media.order_able]
+            medias = medias.filter(sku__in=order_able_skus)
+        return len(medias), medias, date_for_updates_to_ignore
 
     def poll_bestbuy(self):
         timezone_offset = -8.0
@@ -176,9 +197,97 @@ class BestBuyAPI:
                     "error": error
                 })
         print(f"Was able to save [{index_so_far}/{total_number_of_products}] medias to database")
+        print(f"time to alert the users and guilds on the hour at {now}")
+        number_of_medias, medias, date_for_updates_to_ignore = self.get_latest_medias(
+            limit_search_to_new_media=True
+        )
+        print(f"got {number_of_medias} medias that the guilds and users have to be alerted about")
+        if number_of_medias > 0:
+            body = ""
+            for media in medias:
+                quantity_info = media.get_latest_quantity()
+                body += f"""{media.name}\n
+Price - Regular : {quantity_info.regular_price} | Sales : 
+{quantity_info.sales_price}\nQuantity: {quantity_info.quantity} \n
+[Link]({media.product_url})\n\n"""
+            send_email("SteelbooksAtBestBuy Alert", body)
         if len(faulty_products) > 0:
-            User.alert_me_of_faulty_product_calls(faulty_products)
+            alert_me_of_faulty_product_calls(faulty_products)
 
+
+def send_email(subject: str = None, body: str = None):
+    from_person_name = 'BestBuy-Steelbooks'
+    from_person_email = 'bestbuy.steelbooks@gmail.com'
+    password = f"{os.environ['BESTBUY_STEELBOOKS_PASSWORD']}"
+    to_person_email = f"{os.environ['JACE_EMAIL']}"
+
+    print("Setting up MIMEMultipart object")
+    msg = MIMEMultipart()
+    msg['From'] = from_person_name + " <" + from_person_email + ">"
+    msg['To'] = " <" + to_person_email + ">"
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'html'))
+
+    print("Connecting to smtp.gmail.com:587")
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.connect("smtp.gmail.com", 587)
+    server.ehlo()
+    server.starttls()
+    print("Logging into your gmail")
+    server.login(from_person_email, password)
+    print("Sending email...")
+    server.send_message(from_addr=from_person_email, to_addrs=to_person_email, msg=msg)
+    server.close()
+    print(f"email sent to {to_person_email}")
+    client = Client(f"{os.environ['TWILIO_ACCOUNT_SID']}", f"{os.environ['TWILIO_AUTH_TOKEN']}")
+
+    # change the "from_" number to your Twilio number and the "to" number
+    # to the phone number you signed up for Twilio with, or upgrade your
+    # account to send SMS to any phone number
+    client.messages.create(to=f"{os.environ['JACE_NUMBER']}",
+                           from_=f"{os.environ['TWILIO_VIRTUAL_NUMBER']}",
+                           body="check your email new steelbooks")
+
+
+def alert_me_of_faulty_product_calls(faulty_products):
+    from_person_name = 'BestBuy-Steelbooks'
+    from_person_email = 'bestbuy.steelbooks@gmail.com'
+    password = f"{os.environ['BESTBUY_STEELBOOKS_PASSWORD']}"
+    to_person_email = f"{os.environ['JACE_EMAIL']}"
+    body = ""
+
+    for faulty_product in faulty_products:
+        body += f"Product: {faulty_product['product']} <br>" \
+                f"SKU: {faulty_product['SKU']} <br>" \
+                f"URL: {faulty_product['url']} <br>" \
+                f"error: {faulty_product['error']}<br><br><br>"
+
+    print("Setting up MIMEMultipart object")
+    msg = MIMEMultipart()
+    msg['From'] = from_person_name + " <" + from_person_email + ">"
+    msg['To'] = " <" + to_person_email + ">"
+    msg['Subject'] = "fault API Calls"
+    msg.attach(MIMEText(body, 'html'))
+
+    print("Connecting to smtp.gmail.com:587")
+    server = smtplib.SMTP('smtp.gmail.com', 587)
+    server.connect("smtp.gmail.com", 587)
+    server.ehlo()
+    server.starttls()
+    print("Logging into your gmail")
+    server.login(from_person_email, password)
+    print("Sending email...")
+    server.send_message(from_addr=from_person_email, to_addrs=to_person_email, msg=msg)
+    server.close()
+
+    client = Client(f"{os.environ['TWILIO_ACCOUNT_SID']}", f"{os.environ['TWILIO_AUTH_TOKEN']}")
+
+    # change the "from_" number to your Twilio number and the "to" number
+    # to the phone number you signed up for Twilio with, or upgrade your
+    # account to send SMS to any phone number
+    client.messages.create(to=f"{os.environ['JACE_NUMBER']}",
+                           from_=f"{os.environ['TWILIO_VIRTUAL_NUMBER']}",
+                           body="check your email for faulty API calls")
 
 if __name__ == '__main__':
     best_buy_api = BestBuyAPI()

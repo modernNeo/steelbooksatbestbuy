@@ -33,6 +33,13 @@ services:
         - POSTGRES_USER
         - POSTGRES_PASSWORD
         - COMPOSE_PROJECT_NAME
+        - SECRET_KEY
+        - BESTBUY_STEELBOOKS_PASSWORD
+        - JACE_EMAIL
+        - TWILIO_ACCOUNT_SID
+        - TWILIO_AUTH_TOKEN
+        - JACE_NUMBER
+        - TWILIO_VIRTUAL_NUMBER
     networks:
       - steelbooksatbestbuy_network
     restart: unless-stopped
