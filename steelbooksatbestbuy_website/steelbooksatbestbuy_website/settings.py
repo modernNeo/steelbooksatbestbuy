@@ -80,6 +80,7 @@ WSGI_APPLICATION = 'steelbooksatbestbuy_website.wsgi.application'
 #         'NAME': BASE_DIR / f"{os.environ['WEBSITE_DATABASE_PATH']}db.sqlite3",
 #     }
 # }
+# print(f"WEBSITE_DATABASE_PATH=[{os.environ['WEBSITE_DATABASE_PATH']}]")
 
 
 DATABASES = {
@@ -95,7 +96,6 @@ DATABASES = {
 
 print(f"ALLOWED_HOSTS=[{ALLOWED_HOSTS}]")
 print(f"BASE_DIR=[{BASE_DIR}]")
-print(f"WEBSITE_DATABASE_PATH=[{os.environ['WEBSITE_DATABASE_PATH']}]")
 print(f'DATABASES.default.NAME=[{DATABASES["default"]["NAME"]}]')
 
 # Password validation
