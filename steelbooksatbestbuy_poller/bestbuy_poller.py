@@ -219,7 +219,7 @@ def send_email(subject: str = None, body: str = None):
     from_person_name = 'BestBuy-Steelbooks'
     from_person_email = 'bestbuy.steelbooks@gmail.com'
     password = f"{os.environ['BESTBUY_STEELBOOKS_PASSWORD']}"
-    to_person_email = f"{os.environ['JACE_EMAIL']}"
+    to_person_email = f"{os.environ['TO_EMAIL']}"
 
     print("Setting up MIMEMultipart object")
     msg = MIMEMultipart()
@@ -244,7 +244,7 @@ def send_email(subject: str = None, body: str = None):
     # change the "from_" number to your Twilio number and the "to" number
     # to the phone number you signed up for Twilio with, or upgrade your
     # account to send SMS to any phone number
-    client.messages.create(to=f"{os.environ['JACE_NUMBER']}",
+    client.messages.create(to=f"{os.environ['TO_NUMBER']}",
                            from_=f"{os.environ['TWILIO_VIRTUAL_NUMBER']}",
                            body="check your email new steelbooks")
 
@@ -253,7 +253,7 @@ def alert_me_of_faulty_product_calls(faulty_products):
     from_person_name = 'BestBuy-Steelbooks'
     from_person_email = 'bestbuy.steelbooks@gmail.com'
     password = f"{os.environ['BESTBUY_STEELBOOKS_PASSWORD']}"
-    to_person_email = f"{os.environ['JACE_EMAIL']}"
+    to_person_email = f"{os.environ['TO_EMAIL']}"
     body = ""
 
     for faulty_product in faulty_products:
@@ -285,7 +285,7 @@ def alert_me_of_faulty_product_calls(faulty_products):
     # change the "from_" number to your Twilio number and the "to" number
     # to the phone number you signed up for Twilio with, or upgrade your
     # account to send SMS to any phone number
-    client.messages.create(to=f"{os.environ['JACE_NUMBER']}",
+    client.messages.create(to=f"{os.environ['TO_NUMBER']}",
                            from_=f"{os.environ['TWILIO_VIRTUAL_NUMBER']}",
                            body="check your email for faulty API calls")
 

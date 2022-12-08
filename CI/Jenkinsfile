@@ -16,10 +16,10 @@ pipeline {
                 string(credentialsId: 'STEELBOOKS_POSTGRES_DB', variable: 'STEELBOOKS_POSTGRES_DB'),
                 string(credentialsId: 'STEELBOOKS_SECRET_KEY', variable: 'STEELBOOKS_SECRET_KEY'),
                 string(credentialsId: 'BESTBUY_STEELBOOKS_PASSWORD', variable: 'BESTBUY_STEELBOOKS_PASSWORD'),
-                string(credentialsId: 'JACE_EMAIL', variable: 'JACE_EMAIL'),
+                string(credentialsId: 'TO_EMAIL', variable: 'TO_EMAIL'),
                 string(credentialsId: 'TWILIO_ACCOUNT_SID', variable: 'TWILIO_ACCOUNT_SID'),
                 string(credentialsId: 'TWILIO_AUTH_TOKEN', variable: 'TWILIO_AUTH_TOKEN'),
-                string(credentialsId: 'JACE_NUMBER', variable: 'JACE_NUMBER'),
+                string(credentialsId: 'TO_NUMBER', variable: 'TO_NUMBER'),
                 string(credentialsId: 'TWILIO_VIRTUAL_NUMBER', variable: 'TWILIO_VIRTUAL_NUMBER')]
                 ){
                     sh label: '', script: """bash -c \'
@@ -28,10 +28,10 @@ pipeline {
                         export POSTGRES_PASSWORD="'"${STEELBOOKS_POSTGRES_PASSWORD}"'";
                         export STEELBOOKS_SECRET_KEY="'"${STEELBOOKS_SECRET_KEY}"'";
                         export BESTBUY_STEELBOOKS_PASSWORD="'"${BESTBUY_STEELBOOKS_PASSWORD}"'";
-                        export JACE_EMAIL="'"${JACE_EMAIL}"'";
+                        export TO_EMAIL="'"${TO_EMAIL}"'";
                         export TWILIO_ACCOUNT_SID="'"${TWILIO_ACCOUNT_SID}"'";
                         export TWILIO_AUTH_TOKEN="'"${TWILIO_AUTH_TOKEN}"'";
-                        export JACE_NUMBER="'"${JACE_NUMBER}"'";
+                        export TO_NUMBER="'"${TO_NUMBER}"'";
                         export TWILIO_VIRTUAL_NUMBER="'"${TWILIO_VIRTUAL_NUMBER}"'";
                         export JENKINS="true";
                         ./CI/deploy.sh;

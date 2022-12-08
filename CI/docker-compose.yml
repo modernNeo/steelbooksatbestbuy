@@ -35,10 +35,10 @@ services:
         - COMPOSE_PROJECT_NAME
         - SECRET_KEY
         - BESTBUY_STEELBOOKS_PASSWORD
-        - JACE_EMAIL
+        - TO_EMAIL
         - TWILIO_ACCOUNT_SID
         - TWILIO_AUTH_TOKEN
-        - JACE_NUMBER
+        - TO_NUMBER
         - TWILIO_VIRTUAL_NUMBER
     networks:
       - steelbooksatbestbuy_network
