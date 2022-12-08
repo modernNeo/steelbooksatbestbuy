@@ -5,7 +5,7 @@
 set -e -o xtrace
 # https://stackoverflow.com/a/5750463/7734535
 
-export COMPOSE_PROJECT_NAME="steelbookatsbestbuy"
+export COMPOSE_PROJECT_NAME="steelbooksatbestbuy"
 
 
 
