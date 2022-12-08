@@ -1,0 +1,44 @@
+version: "3.8"
+services:
+  steelbooksatbestbuy_website:
+#    env_file: steelbooksatbestbuy_dockerized.env
+    build:
+      context: ../
+      dockerfile:  steelbooksatbestbuy_website/Dockerfile
+    depends_on:   # used to ensure that docker wont start finance_site until after it has started the database container
+        - "db"
+    container_name: "${COMPOSE_PROJECT_NAME}_website"
+    image: "${COMPOSE_PROJECT_NAME}_website"
+    networks:
+      - steelbooksatbestbuy_network
+    restart: unless-stopped
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t
+  steelbooksatbestbuy_poller:
+#    env_file: steelbooksatbestbuy_dockerized.env
+    build:
+      context: ../
+      dockerfile:  steelbooksatbestbuy_poller/Dockerfile
+    container_name: "${COMPOSE_PROJECT_NAME}_poller"
+    image: "${COMPOSE_PROJECT_NAME}_poller"
+    networks:
+      - steelbooksatbestbuy_network
+    restart: unless-stopped
+    depends_on:   # used to ensure that docker wont start finance_site until after it has started the database container
+        - "db"
+#    stdin_open: true # docker run -i
+#    tty: true        # docker run -t
+  db: #declaration of the postgres container
+      environment:
+          - POSTGRES_DB
+          - POSTGRES_USER
+          - POSTGRES_PASSWORD
+      image: postgres:alpine #using postgres image
+      container_name: "${COMPOSE_PROJECT_NAME}_db"
+      networks:
+          - steelbooksatbestbuy_network
+
+networks:
+  steelbooksatbestbuy_network:
+        name: steelbooksatbestbuy_network
+        external: true
