@@ -10,7 +10,9 @@ services:
     container_name: "${COMPOSE_PROJECT_NAME}_website"
     image: "${COMPOSE_PROJECT_NAME}_website"
     environment:
-      - POSTGRES_PASSWORD
+        - POSTGRES_DB
+        - POSTGRES_USER
+        - POSTGRES_PASSWORD
     networks:
       - steelbooksatbestbuy_network
     restart: unless-stopped
@@ -24,7 +26,9 @@ services:
     container_name: "${COMPOSE_PROJECT_NAME}_poller"
     image: "${COMPOSE_PROJECT_NAME}_poller"
     environment:
-      - POSTGRES_PASSWORD
+        - POSTGRES_DB
+        - POSTGRES_USER
+        - POSTGRES_PASSWORD
     networks:
       - steelbooksatbestbuy_network
     restart: unless-stopped
