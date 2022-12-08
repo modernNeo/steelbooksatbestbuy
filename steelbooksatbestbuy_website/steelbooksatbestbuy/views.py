@@ -50,10 +50,6 @@ class Index(View):
 
     def post(self, request):
         context = {'medias': Index.context_creator(request)}
-        discord_id = request.POST.get("discord_id", None)
-        if discord_id is None:
-            context['error'] = "Invalid Discord Id"
-            return render(request, 'steelbooksatbestbuy/index.html', context=context)
         movies = request.POST.get("movies", None)
         if movies is None:
             context['error'] = "Invalid Movie specified"
@@ -74,30 +70,11 @@ class Index(View):
             return render(request, 'steelbooksatbestbuy/index.html', context=context)
         else:
             phone_number = None if phone_number is None or len(phone_number) == 0 else phone_number
-        response = requests.post(
-            "https://discord.com/api/users/@me/channels",
-            data=json.dumps({"recipient_id": discord_id}
-                            ),
-            headers={
-                "Authorization": f"Bot {settings.DISCORD_BOT_TOKEN}",
-                "Content-Type": "application/json"
-            }
-        )
-        if response.status_code == 200:
-            people_to_alert = User.objects.all().filter(discord_id=discord_id).first()
-            if people_to_alert is None:
-                people_to_alert = User(discord_id=discord_id, email=email, phone_number=phone_number)
-                people_to_alert.save()
-            for movie in movies:
-                Alert(person_to_alert=people_to_alert,
-                      media_search_string=movie).save()
-            return HttpResponseRedirect("")
-        else:
-            return render(
-                request,
-                'steelbooksatbestbuy/index.html',
-                context={
-                    'medias': Index.context_creator(request),
-                    'error': "Invalid Discord Id"
-                }
-            )
+        people_to_alert = User.objects.all().filter(email=email).first()
+        if people_to_alert is None:
+            people_to_alert = User(email=email, phone_number=phone_number)
+            people_to_alert.save()
+        for movie in movies:
+            Alert(person_to_alert=people_to_alert,
+                  media_search_string=movie).save()
+        return HttpResponseRedirect("")

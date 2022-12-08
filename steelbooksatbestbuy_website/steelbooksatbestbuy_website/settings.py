@@ -138,5 +138,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-DISCORD_BOT_TOKEN = os.environ['DISCORD_BOT_TOKEN']
