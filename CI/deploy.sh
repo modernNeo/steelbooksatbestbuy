@@ -22,7 +22,7 @@ docker image rm -f $(docker images  | grep -i "${prod_website_image_name_lower_c
 docker image rm -f $(docker images  | grep -i "${prod_poller_image_name_lower_case}" | awk '{print $3}') || true
 
 export SECRET_KEY="${STEELBOOKS_SECRET_KEY}";
-export HTTP_HOST="steelbooksbestbuy.modernneo.com";
+export HTTP_HOST="steelbooks.modernneo.com";
 
 if [ "${JENKINS}" == "true" ]; then
   docker-compose -f "${docker_compose_file}" up -d
