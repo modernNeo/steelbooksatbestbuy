@@ -14,3 +14,4 @@ twilio==7.9.1
 tzdata==2022.1
 tzlocal==4.2
 urllib3==1.26.9
+psycopg2-binary
