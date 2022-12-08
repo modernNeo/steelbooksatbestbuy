@@ -293,6 +293,6 @@ if __name__ == '__main__':
     best_buy_api = BestBuyAPI()
 
     scheduler = BlockingScheduler()
-    best_buy_api.poll_bestbuy()
-    scheduler.add_job(func=best_buy_api.poll_bestbuy, hours=1, trigger='interval')
+    # best_buy_api.poll_bestbuy()
+    # scheduler.add_job(func=best_buy_api.poll_bestbuy, hours=1, trigger='interval')
     scheduler.start()
