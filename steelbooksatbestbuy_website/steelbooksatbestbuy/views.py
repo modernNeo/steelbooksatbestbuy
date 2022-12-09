@@ -1,13 +1,7 @@
-import json
-import re
-
-import requests
-from django.conf import settings
-from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.views.generic.base import View
 
-from steelbooksatbestbuy.models import Media, User, Alert
+from steelbooksatbestbuy.models import Media
 
 media_filter = {
     "price": "quantityupdate__regular_price",
@@ -47,34 +41,3 @@ class Index(View):
 
     def get(self, request):
         return render(request, 'steelbooksatbestbuy/index.html', context={'medias': Index.context_creator(request)})
-
-    def post(self, request):
-        context = {'medias': Index.context_creator(request)}
-        movies = request.POST.get("movies", None)
-        if movies is None:
-            context['error'] = "Invalid Movie specified"
-            return render(request, 'steelbooksatbestbuy/index.html', context=context)
-        else:
-            movies = movies.split("\r\n")
-        email = request.POST.get("email", None)
-        if email is not None and (
-            len(email) > 0 and not re.match(r"^\w+@(gmail|hotmail|protonmail|sfu|outlook|icloud|me)\.(com|ca)+$",
-                                            email)):
-            context['error'] = "Invalid Email Specified"
-            return render(request, 'steelbooksatbestbuy/index.html', context=context)
-        else:
-            email = None if email is None or len(email) == 0 else email
-        phone_number = request.POST.get("phone_number", None)
-        if phone_number is not None and not (len(phone_number) == 0 or len(phone_number) == 10):
-            context['error'] = "Invalid Phone Number Specified"
-            return render(request, 'steelbooksatbestbuy/index.html', context=context)
-        else:
-            phone_number = None if phone_number is None or len(phone_number) == 0 else phone_number
-        people_to_alert = User.objects.all().filter(email=email).first()
-        if people_to_alert is None:
-            people_to_alert = User(email=email, phone_number=phone_number)
-            people_to_alert.save()
-        for movie in movies:
-            Alert(person_to_alert=people_to_alert,
-                  media_search_string=movie).save()
-        return HttpResponseRedirect("")

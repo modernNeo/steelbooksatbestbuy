@@ -138,125 +138,125 @@ class QuantityUpdate(models.Model):
             self.status_for_shipping != new_online_order_status
         )
 
-
-class Guild(models.Model):
-    guild_id = models.IntegerField(
-        unique=True
-    )
-    guild_name = models.CharField(
-        max_length=300
-    )
-
-    channel_id = models.IntegerField(
-        unique=True
-    )
-    channel_name = models.CharField(
-        max_length=300
-    )
-
-    def __str__(self):
-        return f"Guild: {self.guild_name}"
-
-
-class RoleToTargetForGuild(models.Model):
-    guild = models.ForeignKey(
-        Guild,
-        on_delete=models.CASCADE
-    )
-    role_to_tag_name = models.CharField(
-        max_length=500
-    )
-    role_to_tag_id = models.IntegerField(
-    )
-
-    def save(self, *args, **kwargs):
-        duplicate = RoleToTargetForGuild.objects.all()
-        if self.id is not None:
-            duplicate = duplicate.filter(
-                guild_id=self.guild_id,
-                role_to_tag_name=self.role_to_tag_name,
-                role_to_tag_id=self.role_to_tag_id,
-            ).exclude(id=self.id).first()
-        else:
-            duplicate = duplicate.filter(
-                guild_id=self.guild_id,
-                role_to_tag_name=self.role_to_tag_name,
-                role_to_tag_id=self.role_to_tag_id,
-            ).first()
-        if duplicate is None:
-            super(RoleToTargetForGuild, self).save(*args, **kwargs)
-            return None
-        else:
-            return f"role {self.role_to_tag_name} already saved"
+#
+# class Guild(models.Model):
+#     guild_id = models.IntegerField(
+#         unique=True
+#     )
+#     guild_name = models.CharField(
+#         max_length=300
+#     )
+#
+#     channel_id = models.IntegerField(
+#         unique=True
+#     )
+#     channel_name = models.CharField(
+#         max_length=300
+#     )
+#
+#     def __str__(self):
+#         return f"Guild: {self.guild_name}"
 
 
-class User(models.Model):
-    discord_id = models.IntegerField(
+# class RoleToTargetForGuild(models.Model):
+#     guild = models.ForeignKey(
+#         Guild,
+#         on_delete=models.CASCADE
+#     )
+#     role_to_tag_name = models.CharField(
+#         max_length=500
+#     )
+#     role_to_tag_id = models.IntegerField(
+#     )
+#
+#     def save(self, *args, **kwargs):
+#         duplicate = RoleToTargetForGuild.objects.all()
+#         if self.id is not None:
+#             duplicate = duplicate.filter(
+#                 guild_id=self.guild_id,
+#                 role_to_tag_name=self.role_to_tag_name,
+#                 role_to_tag_id=self.role_to_tag_id,
+#             ).exclude(id=self.id).first()
+#         else:
+#             duplicate = duplicate.filter(
+#                 guild_id=self.guild_id,
+#                 role_to_tag_name=self.role_to_tag_name,
+#                 role_to_tag_id=self.role_to_tag_id,
+#             ).first()
+#         if duplicate is None:
+#             super(RoleToTargetForGuild, self).save(*args, **kwargs)
+#             return None
+#         else:
+#             return f"role {self.role_to_tag_name} already saved"
 
-    )
-    email = models.CharField(
-        max_length=300,
-        default=None,
-        null=True,
-        blank=True
-    )
-    phone_number = models.IntegerField(
-        default=None,
-        blank=True,
-        null=True
-    )
+#
+# class User(models.Model):
+#     discord_id = models.IntegerField(
+#
+#     )
+#     email = models.CharField(
+#         max_length=300,
+#         default=None,
+#         null=True,
+#         blank=True
+#     )
+#     phone_number = models.IntegerField(
+#         default=None,
+#         blank=True,
+#         null=True
+#     )
+#
+#     def __str__(self):
+#         return f"Person [{self.id}] with Discord Id {self.discord_id}"
 
-    def __str__(self):
-        return f"Person [{self.id}] with Discord Id {self.discord_id}"
-
-
-class Alert(models.Model):
-    person_to_alert = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE
-    )
-    media_search_string = models.CharField(
-        max_length=500
-    )
-
-    def save(self, *args, **kwargs):
-        duplicate = Alert.objects.all()
-        if self.id is not None:
-            duplicate = duplicate.filter(
-                person_to_alert=self.person_to_alert_id,
-                media_search_string=self.media_search_string,
-            ).exclude(id=self.id).first()
-        else:
-            duplicate = duplicate.filter(
-                person_to_alert=self.person_to_alert_id,
-                media_search_string=self.media_search_string
-            ).first()
-        if duplicate is None:
-            super(Alert, self).save(*args, **kwargs)
-            return None
-        else:
-            return f"{self.media_search_string} is already on your list of alerts"
-
-    def __str__(self):
-        return f"[(Alert) {self.person_to_alert} set alert for \"{self.media_search_string}\"]"
-
-
-class LastTimeAlertWasUsedForSpecificMedia(models.Model):
-    media = models.ForeignKey(
-        Media,
-        on_delete=models.CASCADE
-    )
-    alert = models.ForeignKey(
-        Alert,
-        on_delete=models.CASCADE
-    )
-    date_for_updates_to_ignore = models.DateTimeField(
-
-    )
-
-    def __str__(self):
-        return (
-            f"[(LastTimeAlertWasUsedForSpecificMedia) "
-            f"Alert {self.alert} for media {self.media} "
-            f"was last updated on {self.date_for_updates_to_ignore}]"
-        )
+#
+# class Alert(models.Model):
+#     person_to_alert = models.ForeignKey(
+#         User,
+#         on_delete=models.CASCADE
+#     )
+#     media_search_string = models.CharField(
+#         max_length=500
+#     )
+#
+#     def save(self, *args, **kwargs):
+#         duplicate = Alert.objects.all()
+#         if self.id is not None:
+#             duplicate = duplicate.filter(
+#                 person_to_alert=self.person_to_alert_id,
+#                 media_search_string=self.media_search_string,
+#             ).exclude(id=self.id).first()
+#         else:
+#             duplicate = duplicate.filter(
+#                 person_to_alert=self.person_to_alert_id,
+#                 media_search_string=self.media_search_string
+#             ).first()
+#         if duplicate is None:
+#             super(Alert, self).save(*args, **kwargs)
+#             return None
+#         else:
+#             return f"{self.media_search_string} is already on your list of alerts"
+#
+#     def __str__(self):
+#         return f"[(Alert) {self.person_to_alert} set alert for \"{self.media_search_string}\"]"
+#
+#
+# class LastTimeAlertWasUsedForSpecificMedia(models.Model):
+#     media = models.ForeignKey(
+#         Media,
+#         on_delete=models.CASCADE
+#     )
+#     alert = models.ForeignKey(
+#         Alert,
+#         on_delete=models.CASCADE
+#     )
+#     date_for_updates_to_ignore = models.DateTimeField(
+#
+#     )
+#
+#     def __str__(self):
+#         return (
+#             f"[(LastTimeAlertWasUsedForSpecificMedia) "
+#             f"Alert {self.alert} for media {self.media} "
+#             f"was last updated on {self.date_for_updates_to_ignore}]"
+#         )

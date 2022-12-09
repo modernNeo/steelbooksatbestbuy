@@ -1,3 +1,4 @@
 apscheduler
 twilio
 discord.py
+psycopg2-binary

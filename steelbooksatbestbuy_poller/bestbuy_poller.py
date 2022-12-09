@@ -15,7 +15,7 @@ from twilio.rest import Client
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 django.setup()
 
-from steelbooksatbestbuy.models import Media, QuantityUpdate, User
+from steelbooksatbestbuy.models import Media, QuantityUpdate
 
 
 class BestBuyAPI:

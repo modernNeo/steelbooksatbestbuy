@@ -1,12 +1,3 @@
-<form method="post">
-    {%  csrf_token %}
-    <h1>Sign-up for alerts for a piece of media</h1><br>
-    {{ error }}<br>
-    Email: [optional] <input type="text" name="email"><br>
-    Phone Number: [optional] <input type="number" name="phone_number"><br>
-    <textarea rows="8" cols="30" required name="movies" placeholder="Enter&#10;each&#10;media&#10;name&#10;on&#10;a&#10;new&#10;line"></textarea><br>
-    <button>Submit</button>
-</form>
 {%  if medias|length == 0 %}
     no media
 {% else %}
