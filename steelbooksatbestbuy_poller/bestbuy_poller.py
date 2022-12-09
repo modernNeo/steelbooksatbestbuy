@@ -206,10 +206,8 @@ class BestBuyAPI:
             body = ""
             for media in medias:
                 quantity_info = media.get_latest_quantity()
-                body += f"""{media.name}\n
-Price - Regular : {quantity_info.regular_price} | Sales : 
-{quantity_info.sales_price}\nQuantity: {quantity_info.quantity} \n
-[Link]({media.product_url})\n\n"""
+                body += f"""{media.name}<br>Price - Regular : {quantity_info.regular_price} | Sales : 
+{quantity_info.sales_price}<br>Quantity: {quantity_info.quantity} <br><a href="{media.product_url}">Link</a><br><br>"""
             send_email("SteelbooksAtBestBuy Alert", body)
         if len(faulty_products) > 0:
             alert_me_of_faulty_product_calls(faulty_products)
@@ -239,14 +237,14 @@ def send_email(subject: str = None, body: str = None):
     server.send_message(from_addr=from_person_email, to_addrs=to_person_email, msg=msg)
     server.close()
     print(f"email sent to {to_person_email}")
-    client = Client(f"{os.environ['TWILIO_ACCOUNT_SID']}", f"{os.environ['TWILIO_AUTH_TOKEN']}")
+    # client = Client(f"{os.environ['TWILIO_ACCOUNT_SID']}", f"{os.environ['TWILIO_AUTH_TOKEN']}")
 
     # change the "from_" number to your Twilio number and the "to" number
     # to the phone number you signed up for Twilio with, or upgrade your
     # account to send SMS to any phone number
-    client.messages.create(to=f"{os.environ['TO_NUMBER']}",
-                           from_=f"{os.environ['TWILIO_VIRTUAL_NUMBER']}",
-                           body="check your email new steelbooks")
+    # client.messages.create(to=f"{os.environ['TO_NUMBER']}",
+    #                        from_=f"{os.environ['TWILIO_VIRTUAL_NUMBER']}",
+    #                        body="check your email new steelbooks")
 
 
 def alert_me_of_faulty_product_calls(faulty_products):
