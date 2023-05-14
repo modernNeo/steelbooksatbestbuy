@@ -114,7 +114,7 @@ class BestBuyAPI:
                     orderable_property_changed = True
                     if media is not None:
                         latest_time_quantity_was_changed = media.get_latest_quantity()
-                        orderable_property_changed = latest_time_quantity_was_changed.orderable_property_changed(
+                        orderable_property_changed, attributes_changed = latest_time_quantity_was_changed.orderable_property_changed(
                             current_quantities_remaining, regular_price, sales_price, purchaseable_via_pickup,
                             purchaseable_via_shipping, pickup_status, online_order_status
                         )
@@ -132,7 +132,8 @@ class BestBuyAPI:
                                 purchaseable_via_pickup=purchaseable_via_pickup,
                                 status_for_pickup=pickup_status,
                                 purchaseable_via_shipping=purchaseable_via_shipping,
-                                status_for_shipping=online_order_status
+                                status_for_shipping=online_order_status,
+                                attributes_changed=attributes_changed
                             ).save()
                         else:
                             media.set_flag_to_be_ignored_by_bot()
@@ -165,7 +166,8 @@ class BestBuyAPI:
                             purchaseable_via_pickup=purchaseable_via_pickup,
                             status_for_pickup=pickup_status,
                             purchaseable_via_shipping=purchaseable_via_shipping,
-                            status_for_shipping=online_order_status
+                            status_for_shipping=online_order_status,
+                            attributes_changed="New Item"
                         ).save()
                         print(
                             f"{now}-info for new media:"
@@ -207,8 +209,9 @@ class BestBuyAPI:
             for media in medias:
                 quantity_info = media.get_latest_quantity()
                 body += f"""{media.name}<br>Price - Regular : {quantity_info.regular_price} | Sales : 
-{quantity_info.sales_price}<br>Quantity: {quantity_info.quantity} <br><a href="{media.product_url}">Link</a><br><br>"""
-            send_email("SteelbooksAtBestBuy Alert", body)
+{quantity_info.sales_price}<br>Quantity: {quantity_info.quantity} <br><a href="{media.product_url}">Link</a><br>"""
+                body += f"""{quantity_info.attributes_changed}<br><br>"""
+            send_email("SteelBooks at BestBuy", body)
         if len(faulty_products) > 0:
             alert_me_of_faulty_product_calls(faulty_products)
 

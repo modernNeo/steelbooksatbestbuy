@@ -121,6 +121,11 @@ class QuantityUpdate(models.Model):
     status_for_shipping = models.CharField(
         max_length=300
     )
+    attributes_changed = models.CharField(
+        max_length=5000,
+        default=None,
+        null=True
+    )
 
     def order_can_be_placed(self):
         return self.purchaseable_via_pickup or self.purchaseable_via_shipping
@@ -129,14 +134,30 @@ class QuantityUpdate(models.Model):
         self, new_quantity: int, new_regular_price: int, new_sales_price: int, new_purchaseable_via_pickup: bool,
         new_purchaseable_via_shipping: bool, new_pickup_status: str, new_online_order_status: str
     ):
-        return (
-            self.quantity < new_quantity  # only want this updated when there is new stock. not when people buy
-            or self.regular_price != new_regular_price or
-            self.sales_price != new_sales_price or self.purchaseable_via_pickup != new_purchaseable_via_pickup or
-            self.purchaseable_via_shipping != new_purchaseable_via_shipping or
-            self.status_for_pickup != new_pickup_status or
-            self.status_for_shipping != new_online_order_status
-        )
+        changed = False
+        attributes_changed = ""
+        if self.quantity < new_quantity:  # only want this updated when there is new stock. not when people buy
+            attributes_changed += f"quantity changed from [{self.quantity}] to [{new_quantity}]<br>"
+            changed = True
+        if self.regular_price != new_regular_price:
+            attributes_changed += f"regular_price changed from [{self.regular_price}] to [{new_regular_price}]<br>"
+            changed = True
+        if self.sales_price != new_sales_price:
+            attributes_changed += f"sales_price changed from [{self.sales_price}] to [{new_sales_price}]<br>"
+            changed = True
+        if self.purchaseable_via_pickup != new_purchaseable_via_pickup:
+            attributes_changed += f"purchaseable_via_pickup changed from [{self.purchaseable_via_pickup}] to [{new_purchaseable_via_pickup}]<br>"
+            changed = True
+        if self.purchaseable_via_shipping != new_purchaseable_via_shipping:
+            attributes_changed += f"purchaseable_via_shipping changed from [{self.purchaseable_via_shipping}] to [{new_purchaseable_via_shipping}]<br>"
+            changed = True
+        if self.status_for_pickup != new_pickup_status:
+            attributes_changed += f"status_for_pickup changed from [{self.status_for_pickup}] to [{new_pickup_status}]<br>"
+            changed = True
+        if self.status_for_shipping != new_online_order_status:
+            attributes_changed += f"status_for_shipping changed from [{self.status_for_shipping}] to [{new_online_order_status}]<br>"
+            changed = True
+        return changed, attributes_changed
 
 #
 # class Guild(models.Model):
