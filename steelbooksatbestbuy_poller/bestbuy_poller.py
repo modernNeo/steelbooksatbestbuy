@@ -208,7 +208,7 @@ class BestBuyAPI:
             body = ""
             for media in medias:
                 quantity_info = media.get_latest_quantity()
-                body += f"""{media.name}<br>Price - Regular : {quantity_info.regular_price} | Sales : 
+                body += f"""{media.name}<br>SKU: {media.sku}<br>Price - Regular : {quantity_info.regular_price} | Sales : 
 {quantity_info.sales_price}<br>Quantity: {quantity_info.quantity} <br><a href="{media.product_url}">Link</a><br>"""
                 body += f"""{quantity_info.attributes_changed}<br><br>"""
             send_email("SteelBooks at BestBuy", body)
