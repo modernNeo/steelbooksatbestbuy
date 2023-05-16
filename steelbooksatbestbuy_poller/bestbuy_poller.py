@@ -180,6 +180,11 @@ class BestBuyAPI:
                             f"\n\tpickup_status=[{pickup_status}] && online_order_status=[{online_order_status}]"
                         )
                         index_so_far += 1
+                    if orderable_property_changed:
+                        if "wakanda forever" in product['name'].lower():
+                            send_email("black panther wakanda forever steelbook is now available", "")
+                        if "Guardians of the Galaxy".lower() in product['name'].lower():
+                            send_email("Guardians of the Galaxy vol 3 steelbook is now available", "")
                     sleep(3)
                     successful = True
                 except Exception as e:
@@ -199,19 +204,19 @@ class BestBuyAPI:
                     "error": error
                 })
         print(f"Was able to save [{index_so_far}/{total_number_of_products}] medias to database")
-        print(f"time to alert the users and guilds on the hour at {now}")
-        number_of_medias, medias, date_for_updates_to_ignore = self.get_latest_medias(
-            limit_search_to_new_media=True
-        )
-        print(f"got {number_of_medias} medias that the guilds and users have to be alerted about")
-        if number_of_medias > 0:
-            body = ""
-            for media in medias:
-                quantity_info = media.get_latest_quantity()
-                body += f"""{media.name}<br>SKU: {media.sku}<br>Price - Regular : {quantity_info.regular_price} | Sales : 
-{quantity_info.sales_price}<br>Quantity: {quantity_info.quantity} <br><a href="{media.product_url}">Link</a><br>"""
-                body += f"""{quantity_info.attributes_changed}<br><br>"""
-            send_email("SteelBooks at BestBuy", body)
+        # print(f"time to alert the users and guilds on the hour at {now}")
+        # number_of_medias, medias, date_for_updates_to_ignore = self.get_latest_medias(
+        #     limit_search_to_new_media=True
+        # )
+        # print(f"got {number_of_medias} medias that the guilds and users have to be alerted about")
+#         if number_of_medias > 0:
+#             body = ""
+#             for media in medias:
+#                 quantity_info = media.get_latest_quantity()
+#                 body += f"""{media.name}<br>SKU: {media.sku}<br>Price - Regular : {quantity_info.regular_price} | Sales :
+# {quantity_info.sales_price}<br>Quantity: {quantity_info.quantity} <br><a href="{media.product_url}">Link</a><br>"""
+#                 body += f"""{quantity_info.attributes_changed}<br><br>"""
+#             send_email("SteelBooks at BestBuy", body)
         if len(faulty_products) > 0:
             alert_me_of_faulty_product_calls(faulty_products)
 
