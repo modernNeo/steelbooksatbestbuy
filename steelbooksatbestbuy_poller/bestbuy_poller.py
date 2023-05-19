@@ -93,6 +93,7 @@ class BestBuyAPI:
                 try:
                     print(f"trying to get {product_info_base_url}")
                     resp = requests.get(product_info_base_url, headers=self.headers)
+                    print(json.dumps(resp, indent=4))
                     product_info = json.loads(resp.text.encode().decode('utf-8-sig'))
                     print("url received")
                     media = medias.filter(name=product['name']).first()
