@@ -93,8 +93,8 @@ class BestBuyAPI:
                 try:
                     print(f"{now}-trying to get {product_info_base_url}")
                     resp = requests.get(product_info_base_url, headers=self.headers)
-                    print(json.dumps(resp, indent=4))
                     product_info = json.loads(resp.text.encode().decode('utf-8-sig'))
+                    print(json.dumps(product_info, indent=4))
                     print("url received")
                     media = medias.filter(name=product['name']).first()
                     current_quantities_remaining = product_info['availabilities'][0]['shipping'][
