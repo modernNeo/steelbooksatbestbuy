@@ -56,11 +56,11 @@ class BestBuyAPI:
         timezone_offset = -8.0
         tzinfo = datetime.timezone(datetime.timedelta(hours=timezone_offset))
         now = datetime.datetime.now(tzinfo)
-        print(f"polling has started at {now}")
+        print(f"{now}-polling has started at {now}")
         base_url = f"https://www.bestbuy.ca/api/v2/json/search?pageSize=100&query=steelbook"
-        print(f"trying to get data from url {base_url}")
+        print(f"{now}-trying to get data from url {base_url}")
         response = requests.get(base_url, headers=self.headers)
-        print(f"data received from url {base_url}")
+        print(f"{now}-data received from url {base_url}")
         total_pages = response.json()['totalPages']
         total_products = []
         for movies_listing_page in range(1, total_pages + 1):
@@ -68,14 +68,14 @@ class BestBuyAPI:
             url = f"{base_url}&page={movies_listing_page}"
             retry = 0
             while len(products_in_current_page) == 0 and retry < 5:
-                print(f"trying to get data from url {url}, attempt [{retry}/{5}]")
+                print(f"{now}-trying to get data from url {url}, attempt [{retry}/{5}]")
                 products_in_current_page = requests.get(url, headers=self.headers).json()['products']
                 retry += 1
                 if retry == 5:
-                    print(f"endpoint {url} not returning any products..")
+                    print(f"{now}-endpoint {url} not returning any products..")
             if len(products_in_current_page) > 0:
                 total_products.extend(products_in_current_page)
-                print(f"{len(products_in_current_page)} products received from url {url}")
+                print(f"{now}-{len(products_in_current_page)} products received from url {url}")
         total_number_of_products = response.json()['total']
         medias = Media.objects.all()
         index_so_far = 0
@@ -91,7 +91,7 @@ class BestBuyAPI:
             error = None
             while not successful and retry < 5:
                 try:
-                    print(f"trying to get {product_info_base_url}")
+                    print(f"{now}-trying to get {product_info_base_url}")
                     resp = requests.get(product_info_base_url, headers=self.headers)
                     print(json.dumps(resp, indent=4))
                     product_info = json.loads(resp.text.encode().decode('utf-8-sig'))
@@ -111,7 +111,7 @@ class BestBuyAPI:
                             print(
                                 f"mis-match between name from endpoint [{product['name']}] and name in DB [{media.name}]")
                         else:
-                            print(f"new item detected [{product['name']}] from bestbuy's website...")
+                            print(f"{now}-new item detected [{product['name']}] from bestbuy's website...")
                     orderable_property_changed = True
                     if media is not None:
                         latest_time_quantity_was_changed = media.get_latest_quantity()
@@ -204,7 +204,7 @@ class BestBuyAPI:
                     "url": product_info_base_url,
                     "error": error
                 })
-        print(f"Was able to save [{index_so_far}/{total_number_of_products}] medias to database")
+        print(f"{now}-Was able to save [{index_so_far}/{total_number_of_products}] medias to database")
         # print(f"time to alert the users and guilds on the hour at {now}")
         # number_of_medias, medias, date_for_updates_to_ignore = self.get_latest_medias(
         #     limit_search_to_new_media=True
